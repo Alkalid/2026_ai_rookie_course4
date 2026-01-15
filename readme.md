@@ -1,4 +1,4 @@
-# LLM訓練與資料基礎：Tokenizer、Chat Template、資料格式+ 指令微調-SFT（PEFT）與資料設計
+# LLM訓練與資料基礎：Tokenizer、Chat Template、資料格式 + 指令微調-SFT（PEFT）與資料設計
 
 
 

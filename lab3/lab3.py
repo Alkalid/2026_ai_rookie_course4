@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from transformers import AutoTokenizer
 from datasets import DatasetDict, load_dataset
 
-from common_setup import BASE_MODEL_ID
+BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 # TODO 0: 嘗試匯入 opencc（如無則 fallback）
 try:
@@ -42,7 +42,7 @@ def build_synthetic_examples(n: int = 60) -> List[Dict[str, Any]]:
       "id": "ex0001",
       "messages": [ {role, content}, ... ],
       "topic": "退貨流程",
-      "language": "zh-Hant"
+      "language": "zh"
     }
     """
     topics = [

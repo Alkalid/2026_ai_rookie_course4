@@ -8,7 +8,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-from common_setup import BASE_MODEL_ID, has_cuda
+BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 def load_base_and_adapter(base_model_id: str, adapter_dir: str):
     """
@@ -19,14 +19,14 @@ def load_base_and_adapter(base_model_id: str, adapter_dir: str):
     bnb_cfg = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16 if has_cuda() else torch.float16,
+        bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=True,
     )
 
     base = AutoModelForCausalLM.from_pretrained(
         base_model_id,
         quantization_config=bnb_cfg,
-        torch_dtype=torch.bfloat16 if has_cuda() else torch.float32,
+        torch_dtype=torch.bfloat16,
         device_map="auto",
     )
     model = PeftModel.from_pretrained(base, adapter_dir)

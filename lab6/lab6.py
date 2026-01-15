@@ -2,12 +2,12 @@
 import json
 import textwrap
 from typing import List, Dict, Any
-
+import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import PeftModel
 
-from common_setup import BASE_MODEL_ID, has_cuda
-from lab5_inference_and_eval import evaluate_one
+BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+from ..lab5.lab5 import evaluate_one
 
 def load_model_for_inference(base_model_id: str, adapter_dir: str):
     tokenizer = AutoTokenizer.from_pretrained(adapter_dir or base_model_id, use_fast=True)
@@ -15,13 +15,13 @@ def load_model_for_inference(base_model_id: str, adapter_dir: str):
     bnb_cfg = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16 if has_cuda() else torch.float16,
+        bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=True,
     )
     base = AutoModelForCausalLM.from_pretrained(
         base_model_id,
         quantization_config=bnb_cfg,
-        torch_dtype=torch.bfloat16 if has_cuda() else torch.float32,
+        torch_dtype=torch.bfloat16,
         device_map="auto",
     )
     model = PeftModel.from_pretrained(base, adapter_dir)

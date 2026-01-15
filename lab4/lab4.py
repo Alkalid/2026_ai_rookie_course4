@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, BitsAndBytesConfig, AutoTokenizer
 from peft import LoraConfig, get_peft_model
 from trl import SFTTrainer, SFTConfig
 
-from common_setup import BASE_MODEL_ID, has_cuda
+BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 def formatting_samples(example, tokenizer):
     """
@@ -77,7 +77,7 @@ def main():
         warmup_steps=50,
         max_seq_length=1024,
         packing=True,
-        bf16=has_cuda(),
+        bf16=True,
         report_to=[],
     )
 
