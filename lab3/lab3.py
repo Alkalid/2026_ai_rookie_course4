@@ -3,13 +3,13 @@ import json
 import random
 import re
 import unicodedata
-import hashlib
+from urllib import response
+import requests
 from typing import Any, Dict, List
-
+from tqdm import tqdm
 from transformers import AutoTokenizer
-from datasets import DatasetDict, load_dataset
 
-BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
 
 # TODO 0: 嘗試匯入 opencc（如無則 fallback）
 try:
@@ -21,7 +21,7 @@ except Exception:
     def to_trad(s: str) -> str:
         return s
 
-BADWORDS = {"垃圾", "白癡", "去死"}  # 示意
+BADWORDS = ("垃圾", "白癡", "去死")  # 示意
 
 def normalize_text(s: str) -> str:
     # TODO 1: 實作基礎清洗流程
@@ -34,9 +34,25 @@ def is_toxic(s: str) -> bool:
     # TODO 2: 如字串含 BADWORDS 中的任何詞就視為 toxic
     return False
 
+def call_llm(messages):
+    data = {
+        "model": "Qwen2.5-3B-Instruct",
+        "messages": messages,
+        "temperature": 0.8,
+        "top_p": 0.6,
+        "stream": False,
+        "max_tokens": 1024
+    }
+    
+    response = requests.post("http://127.0.0.1:8299/v1/chat/completions", json=data)
+    response = response.json()
+    response_text = response["choices"][0]["message"]["content"]
+    return response_text
+
+from more_topics import more_topics
 def build_synthetic_examples(n: int = 60) -> List[Dict[str, Any]]:
     """
-    建立一個模擬的客服訓練資料集，包含單輪與多輪，
+    建立一個模擬的客服訓練資料集，
     每筆資料格式：
     {
       "id": "ex0001",
@@ -55,24 +71,29 @@ def build_synthetic_examples(n: int = 60) -> List[Dict[str, Any]]:
     ]
 
     def synth_assistant(topic: str, user: str) -> str:
+        
+        system_prompt = """我正在建立一個模擬的客服訓練資料集，我會輸入一個客服主題和使用者的問題，請你扮演客服人員，根據主題提供一個專業且有禮貌的回答。 
+請你回答的時候根據以下範例格式來回覆
+顧客您好:
+感謝您聯繫我們關於{topic}的問題。針對您的詢問："{user}"，我們建議您按照以下步驟進行：
+1. 步驟一....
+2. 步驟二....
+3. 步驟三....
+如果您在操作過程中遇到任何困難，請隨時與我們聯繫。我們的客服團隊將竭誠為您提供協助。
+祝您有美好的一天！
+客服團隊 敬上
+"""
         # TODO 3: 回傳一個固定但看起來合理的客服回答（繁體中文）
         return "..."
 
     data = []
-    for i in range(n):
-        topic, user = random.choice(topics)
-        # 隨機決定單輪或多輪
-        if random.random() < 0.4:
-            # 多輪
-            messages = [
-                # TODO 4: system + user + assistant + user + assistant
-            ]
-        else:
-            # 單輪
-            messages = [
-                # TODO 5: system + user + assistant
-            ]
+    for i in tqdm(range(n)):
+        topic, user = random.choice(more_topics)
+        # TODO 4: 生成單輪對話
+        assistant = synth_assistant(topic, user)
 
+        messages = [
+        ]
         data.append(
             {
                 "id": f"ex{i:04d}",
@@ -118,28 +139,25 @@ def clean_dataset(
 
     return cleaned
 
-def save_jsonl(path: str, items: List[Dict[str, Any]]):
+def save_json(path: str, items: List[Dict[str, Any]]):
     with open(path, "w", encoding="utf-8") as f:
-        for it in items:
-            f.write(json.dumps(it, ensure_ascii=False) + "\n")
+        json.dump(items, f, ensure_ascii=False, indent=4)
 
 def main():
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, use_fast=True)
 
-    raw_examples = build_synthetic_examples(n=80)
+    raw_examples = build_synthetic_examples(n=1)
     cleaned = clean_dataset(raw_examples, tokenizer, max_user_len=300, max_total_tokens=1024)
     random.shuffle(cleaned)
 
     n = len(cleaned)
-    train = cleaned[: int(0.75 * n)]
-    val = cleaned[int(0.75 * n) : int(0.9 * n)]
-    test = cleaned[int(0.9 * n) :]
+    train = cleaned[: int(0.9 * n)]
+    test = cleaned[int(0.9 * n) : n]
 
-    save_jsonl("workdir/train.jsonl", train)
-    save_jsonl("workdir/val.jsonl", val)
-    save_jsonl("workdir/test.jsonl", test)
+    save_json("train.jsonl", train)
+    save_json("test.jsonl", test)
 
-    print(f"資料筆數: train={len(train)}, val={len(val)}, test={len(test)}")
+    print(f"資料筆數: train={len(train)}, test={len(test)}")
 
 if __name__ == "__main__":
     main()
