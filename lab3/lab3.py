@@ -144,8 +144,8 @@ def main():
     train = cleaned[: int(0.9 * n)]
     test = cleaned[int(0.9 * n) : n]
 
-    save_json("train.jsonl", train)
-    save_json("test.jsonl", test)
+    save_json("train.json", train)
+    save_json("test.json", test)
 
     print(f"資料筆數: train={len(train)}, test={len(test)}")
 
