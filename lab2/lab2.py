@@ -5,10 +5,10 @@ from typing import Dict, List
 from transformers import AutoTokenizer
 
 CANDIDATE_TOKENIZERS = [
-    "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "Qwen/Qwen2.5-3B-Instruct",
     # 可以視環境加入其他模型:
+    # "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     # "mistralai/Mistral-7B-Instruct-v0.2",
-    # "Qwen/Qwen2.5-3B-Instruct",
 ]
 
 SAMPLES = {

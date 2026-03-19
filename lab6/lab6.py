@@ -6,7 +6,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import PeftModel
 
-BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
 from ..lab5.lab5 import evaluate_one
 
 def load_model_for_inference(base_model_id: str, adapter_dir: str):

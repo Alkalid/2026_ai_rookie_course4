@@ -8,7 +8,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
-BASE_MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
 
 def load_base_and_adapter(base_model_id: str, adapter_dir: str):
     """

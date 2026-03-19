@@ -14,7 +14,7 @@ def print_env_info():
     print("GPU 可用:", has_cuda())
     if has_cuda():
         print("GPU 名稱:", torch.cuda.get_device_name(0))
-        print("GPU 顯存(GB):", round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2))
+        print("GPU RAM(GB):", round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2))
 
 def load_model_and_tokenizer(model_id: str = BASE_MODEL_ID, load_in_4bit: bool = True):
     print(f"載入模型: {model_id}")
