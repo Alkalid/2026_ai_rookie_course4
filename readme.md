@@ -18,7 +18,20 @@
 - 使用 PEFT（LoRA/QLoRA）完成一次端到端的指令微調。
 - 在推理階段正確套用 Chat Template，並對模型輸出做基本評估與錯誤分析。
 
-### 安裝步驟（範例）
+### 環境與依賴（uv）
+
+本專案以 **[uv](https://github.com/astral-sh/uv)** 管理 Python 版本與套件（取代手動 `venv` + `pip install -r requirements.txt`）。依賴宣告在專案根目錄的 `pyproject.toml`。
+
+1. **安裝 uv**（擇一）：見官方文件 [Installing uv](https://docs.astral.sh/uv/getting-started/installation/)。Windows 可先用獨立安裝程式或 `pip install uv`。
+2. **在專案根目錄同步依賴**（會建立 `.venv` 並安裝 `pyproject.toml` 中的套件）：
+   ```bash
+   uv sync
+   ```
+3. **執行各 Lab 腳本**：在專案根目錄使用 `uv run`（會自動使用上述虛擬環境，無須先 `activate`）。各 Lab 的具體指令見各資料夾內 `README.md`。
+
+> **GPU 與 PyTorch**：若需要特定 CUDA 版 PyTorch，請依 [PyTorch 官網](https://pytorch.org/) 或 uv 文件，以額外 index 安裝對應的 `torch` 後再執行 `uv sync`／調整 `pyproject.toml`。
+
+**為什麼用 uv、細部說明與第一次產生鎖檔**：見 `lab0/README.md`。
 
 ## 實作 Lab 概觀
 

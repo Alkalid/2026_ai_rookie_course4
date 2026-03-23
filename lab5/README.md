@@ -12,6 +12,7 @@
 
 ## 前置需求
 
+- 在專案根目錄執行 `uv sync`。
 - 基礎模型：`lab5.py` 內 `BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"`（需下載權重；顯存不足請向助教確認是否可改小模型並重訓 adapter）。
 - 4-bit 載入：依賴 `bitsandbytes` 與相容的 CUDA 環境。
 - **Adapter 路徑**：骨架為 `workdir/adapter`。請將 Lab4 產出的 adapter **複製**到 `lab5/workdir/adapter`，或修改程式中的 `adapter_dir`。
@@ -66,7 +67,7 @@ lab5/
 
 ```bash
 cd lab5
-python lab5.py
+uv run python lab5.py
 ```
 
 ## 完成定義

@@ -1,6 +1,7 @@
 # lab6_ablation_and_packaging.py
 import json
 import textwrap
+from pathlib import Path
 from typing import List, Dict, Any
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
@@ -8,6 +9,9 @@ from peft import PeftModel
 
 BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
 from ..lab5.lab5 import evaluate_one
+
+_LAB6_DIR = Path(__file__).resolve().parent
+_WORKDIR = _LAB6_DIR / "workdir"
 
 def load_model_for_inference(base_model_id: str, adapter_dir: str):
     tokenizer = AutoTokenizer.from_pretrained(adapter_dir or base_model_id, use_fast=True)
@@ -81,7 +85,7 @@ def write_readme(base_model_id: str, path: str):
 - LoRA/QLoRA 權重路徑: workdir/adapter
 
 使用方式：
-1) 安裝必要套件：transformers, peft, accelerate, bitsandbytes 等。
+1) 在專案根目錄執行 `uv sync` 安裝依賴（含 transformers、peft、accelerate、bitsandbytes 等）。
 2) 執行推理腳本，例如：
    python inference.py --model_id "{base_model_id}" --adapter_dir "workdir/adapter" --system "你是專業客服..." --user "我要查詢出貨進度"
 
@@ -93,11 +97,12 @@ def write_readme(base_model_id: str, path: str):
         f.write(readme)
 
 def main():
-    tokenizer, model = load_model_for_inference(BASE_MODEL_ID, "workdir/adapter")
+    adapter_dir = str(_WORKDIR / "adapter")
+    tokenizer, model = load_model_for_inference(BASE_MODEL_ID, adapter_dir)
 
     # 讀取 test.jsonl
     test_examples = []
-    with open("workdir/test.jsonl", "r", encoding="utf-8") as f:
+    with open(_WORKDIR / "test.jsonl", "r", encoding="utf-8") as f:
         for line in f:
             test_examples.append(json.loads(line))
 
@@ -105,8 +110,8 @@ def main():
     run_template_ablation(test_examples, tokenizer, model, max_samples=5)
 
     # TODO 6: 寫出 inference.py 與 README_delivery.txt
-    write_inference_script(BASE_MODEL_ID, "workdir/adapter", "workdir/inference.py")
-    write_readme(BASE_MODEL_ID, "workdir/README_delivery.txt")
+    write_inference_script(BASE_MODEL_ID, adapter_dir, str(_WORKDIR / "inference.py"))
+    write_readme(BASE_MODEL_ID, str(_WORKDIR / "README_delivery.txt"))
 
     print("已輸出 workdir/inference.py 與 workdir/README_delivery.txt")
 

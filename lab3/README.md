@@ -12,7 +12,7 @@
 
 ## 前置需求
 
-- Python 套件：`transformers`、`tqdm`、`requests`；建議安裝 **`opencc-python-reopen`**（或專案慣用之 OpenCC）以做簡→繁。若未安裝，`lab3.py` 會 fallback 成不轉換（`to_trad` 原樣返回），請在報告中註明。
+- 在專案根目錄執行 `uv sync`（已含 `transformers`、`tqdm`、`requests`、`opencc-python-reimplemented` 等）。若 OpenCC 匯入失敗，`lab3.py` 會 fallback 成不轉換（`to_trad` 原樣返回），請在報告中註明。
 - （選用）腳本內有 `call_llm`，會對 `http://127.0.0.1:8299/v1/chat/completions` 發送請求。若你**沒有**在本機起相容 OpenAI Chat API 的服務，請以 **模板生成** 完成 `synth_assistant`，不要呼叫 `call_llm`，以免程式卡住或報錯。
 
 ## 客服回覆格式（必須遵守）
@@ -75,7 +75,7 @@
 
 ```bash
 cd lab3
-python lab3.py
+uv run python lab3.py
 ```
 
 完成後目錄下應有 `train.json`、`test.json`，且終端機印出筆數。

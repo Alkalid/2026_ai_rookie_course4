@@ -51,7 +51,7 @@
 
 ```bash
 cd lab2
-python lab2.py
+uv run python lab2.py
 ```
 
 - 應印出 JSON 格式的 `report`（每個模型、每種語言的 `raw_tokens` / `chat_tokens` 皆為整數）。

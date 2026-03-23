@@ -19,7 +19,7 @@
 ## 建議步驟（對照 `lab1.py` 的 TODO）
 
 1. **環境**  
-   需能連線下載 tokenizer：`BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"`（僅載 tokenizer 即可，不必載完整 3B 權重做推理）。
+   在專案根目錄已執行過 `uv sync`。需能連線下載 tokenizer：`BASE_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"`（僅載 tokenizer 即可，不必載完整 3B 權重做推理）。
 2. **TODO 1 — `ensure_system_message`**  
    - 若 `messages` 第一則的 `role` 不是 `system`，請在**最前面**插入一則預設 system，例如：`"你是專業客服助理，請用繁體中文，語氣禮貌。"`  
    - 若已有 system，則不要重複插入。
@@ -35,7 +35,7 @@
 
 ```bash
 cd lab1
-python lab1.py
+uv run python lab1.py
 ```
 
 - 對 `RAW_EXAMPLES` 裡的 `ex1`、`ex2` 都應印出長度與 `issues`。  
@@ -47,7 +47,7 @@ python lab1.py
 
 ## 完成定義
 
-- `ensure_system_message`、`to_chat_template_text`、`check_template_consistency` 實作完成，`python lab1.py` 可跑完且輸出合理。
+- `ensure_system_message`、`to_chat_template_text`、`check_template_consistency` 實作完成，`uv run python lab1.py` 可跑完且輸出合理。
 
 ## `apply_chat_template` 簡短示範
 

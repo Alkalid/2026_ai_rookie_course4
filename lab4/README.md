@@ -8,8 +8,8 @@
 
 ## 前置需求
 
+- 在專案根目錄執行 `uv sync`（已含 `torch`、`transformers`、`datasets`、`trl`、`peft`、`accelerate`、`bitsandbytes`）。
 - GPU 建議 8GB 以上（`TinyLlama-1.1B` + LoRA 較輕量；若仍 OOM，請降 `per_device_train_batch_size`、`max_length` 或改 4-bit）。
-- 套件：`torch`、`transformers`、`datasets`、`trl`、`peft`、`accelerate`；若使用量化再加 `bitsandbytes`。
 
 ## 資料準備
 
@@ -56,7 +56,7 @@
 
 ```bash
 cd lab4
-python lab4.py
+uv run python lab4.py
 ```
 
 訓練過程會寫 log；完成後應在 `lab4/adapter`（或你設定的 `output_dir`）看到 adapter 與 tokenizer 檔案。
