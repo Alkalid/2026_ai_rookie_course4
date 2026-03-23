@@ -47,22 +47,25 @@ def to_chat_template_text(example: Dict[str, Any], tokenizer) -> str:
 
     return chat_text
 
-def check_template_consistency(chat_text: str, tokenizer) -> Dict[str, Any]:
+def check_template_consistency(
+    chat_text: str, messages: List[Dict[str, Any]]
+) -> Dict[str, Any]:
     """
-    對產生出的 chat_text 做一些簡單的啟發式檢查：
-    - BOS/EOS 是否重複太多次
-    - 是否可能缺少 system 導引
+    對即將／已經餵給 apply_chat_template 的 messages 做簡單一致性檢查（建議傳入與
+    apply_chat_template 相同的列表，例如已經過 ensure_system_message）：
+    - 每則是否資料完整（必要欄位是否存在）
+    - content 是否為空
+    - role 順序是否合理（第一則為 system，之後 user／assistant 交替）
     """
-    issues = []
+    issues: List[str] = []
 
-    # TODO 4: 檢查 BOS/EOS 出現次數（若 > 1，可能有問題）
-    bos = tokenizer.bos_token or ""
-    eos = tokenizer.eos_token or ""
+    # TODO 4: 資料完整性與 content 是否為空
+    #   - 每則皆為 dict，且含 role、content
+    #   - role、content 經 strip 後不應為空字串
 
-    # 例：if bos and chat_text.count(bos) > 1: issues.append("BOS 出現次數異常")
-
-    # TODO 5: 檢查是否有明顯的「請用繁體」或「你是」等 system 導引（簡單字串檢查）
-    # 例：if "請用繁體" not in chat_text: issues.append("可能缺少繁體中文的 system 導引")
+    # TODO 5: role 順序
+    #   - 第一則 role 必須為 system
+    #   - 之後索引 1,3,5,... 應為 user；2,4,6,... 應為 assistant
 
     return {
         "issues": issues,
@@ -73,8 +76,9 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, use_fast=True)
 
     for ex in RAW_EXAMPLES:
+        messages_for_check = ensure_system_message(list(ex["messages"]))
         chat_text = to_chat_template_text(ex, tokenizer)
-        report = check_template_consistency(chat_text, tokenizer)
+        report = check_template_consistency(chat_text, messages_for_check)
         print(f"ID: {ex['id']}, 長度={report['length']}, 問題={report['issues']}")
         # 可以視需要印出 chat_text 片段
         # print(chat_text)

@@ -6,7 +6,7 @@
 
 - 讀 **JSON**（每筆有 `id`、`messages`，message 有 `role`、`content`）。
 - 用 `AutoTokenizer.apply_chat_template` 轉成訓練／前處理用的文字。
-- 寫簡單 **一致性檢查**，避免訓練、推理格式不一致，或 BOS/EOS 怪怪的、沒 system 導引等。
+- 寫簡單 **一致性檢查**，避免訓練、推理格式不一致或 messages 結構／順序有誤。
 
 > **檔名對照**：`lab1.py` 檔頭註解寫 `lab2_chat_template.py`，內容就是 **Chat Template**；照這份說明和 `lab1.py` 裡的 `TODO` 做即可。
 
@@ -27,8 +27,10 @@
    - 從 `example["messages"]` 取出列表，先經 `ensure_system_message` 處理。  
    - 呼叫 `tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)`，回傳字串。
 4. **TODO 4～5 — `check_template_consistency`**  
-   - 用 `tokenizer.bos_token`、`eos_token`（可能為 `None`）檢查在 `chat_text` 中是否出現**過多次**，若異常則加入 `issues`。  
-   - 用簡單字串規則檢查是否**可能缺少**繁體／角色導引（例如是否包含「請用繁體」「你是」等，可依你們實際預設 system 調整關鍵字）。  
+   - 檢查 **資料是否完整**：每一則 message 皆為 dict，且具備 `role`、`content` 欄位。  
+   - 檢查 **content 是否為空**：`content` 經去除首尾空白後不應為空字串；`role` 也不應為空白。  
+   - 檢查 **role 順序**：第一則必須為 `system`；之後須為 `user` 與 `assistant` 交替（索引 1、3、5… 為 `user`，2、4、6… 為 `assistant`）。單一則 `system`＋`user` 這種結尾在 user 的情況視為合理。  
+   - 函式簽名為 `check_template_consistency(chat_text, messages)`；`messages` 請傳入與 `apply_chat_template` 相同的那份列表（`main` 已用 `ensure_system_message` 示範）。  
    - 回傳 `{"issues": [...], "length": len(chat_text)}`。
 
 ## 執行與自我檢核
@@ -39,7 +41,7 @@ uv run python lab1.py
 ```
 
 - 對 `RAW_EXAMPLES` 裡的 `ex1`、`ex2` 都應印出長度與 `issues`。  
-- `ex2` 刻意沒有 system：實作正確時，模板結果應仍帶有你補上的 system 導引；`issues` 中「缺少導引」類訊息應合理或為空（視你的規則而定）。
+- `ex2` 刻意沒有 system：實作正確時，模板結果應仍帶有你補上的 system 導引；傳入檢查的 `messages` 在補上 system 後，`issues` 應反映結構與順序是否正確（範例資料預期可為空列表）。
 
 ## 與後續 Lab 的關係
 
